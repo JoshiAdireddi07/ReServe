@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodShare - Fighting Food Waste Together</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Scroll to Top -->
+    <div class="scroll-top" id="scrollTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Page Navigation -->
+    <div class="page-nav">
+        <select class="form-select" id="pageSelector">
+            <option value="home">🏠 Homepage</option>
+            <option value="about">📖 About Us</option>
+            <option value="how">❓ How It Works</option>
+            <option value="contact">📞 Contact</option>
+            <option value="donor">👤 Donor Dashboard</option>
+            <option value="ngo">🏢 NGO Dashboard</option>
+            <option value="admin">⚙️ Admin Panel</option>
+        </select>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h3 style="color: var(--secondary-green); margin-bottom: 1.5rem;">Login to FoodShare</h3>
+            <form onsubmit="handleLogin(event)">
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="loginEmail" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="loginPassword" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Login As</label>
+                    <select class="form-select" id="loginRole">
+                        <option value="donor">Donor</option>
+                        <option value="ngo">NGO</option>
+                        <option value="delivery">Delivery Personnel</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-action w-100">Login</button>
+                <p class="text-center mt-3 mb-0">
+                    Don't have an account? <a href="#" onclick="closeModal('loginModal'); openModal('registerModal')" style="color: var(--primary-yellow);">Register</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('registerModal')">&times;</span>
+            <h3 style="color: var(--secondary-green); margin-bottom: 1.5rem;">Register</h3>
+            <form onsubmit="handleRegister(event)">
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Register As</label>
+                    <select class="form-select" id="registerRole">
+                        <option value="donor">Donor</option>
+                        <option value="ngo">NGO</option>
+                        <option value="delivery">Delivery Personnel</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn-action w-100">Register</button>
+                <p class="text-center mt-3 mb-0">
+                    Already have an account? <a href="#" onclick="closeModal('registerModal'); openModal('loginModal')" style="color: var(--primary-yellow);">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Donation Form Modal -->
+    <div id="donationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('donationModal')">&times;</span>
+            <h3 style="color: var(--secondary-green); margin-bottom: 1.5rem;">Create Donation</h3>
+            <form onsubmit="handleDonation(event)">
+                <div class="mb-3">
+                    <label class="form-label">Food Type</label>
+                    <input type="text" class="form-control" placeholder="e.g., Fresh Pizza, Bread, Rice" required>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Unit</label>
+                        <select class="form-select" required>
+                            <option>Boxes</option>
+                            <option>Plates</option>
+                            <option>Kilograms</option>
+                            <option>Pieces</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Pickup Address</label>
+                    <input type="text" class="form-control" required>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Available From</label>
+                        <input type="time" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Available Until</label>
+                        <input type="time" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-action w-100">Create Donation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- HOME PAGE -->
+    <div id="home-page" class="page-content active">
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand" onclick="showPage('home')">
+                    <i class="fas fa-leaf"></i> FoodShare
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item"><a class="nav-link" onclick="showPage('home')">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" onclick="showPage('about')">About</a></li>
+                        <li class="nav-item"><a class="nav-link" onclick="showPage('how')">How It Works</a></li>
+                        <li class="nav-item"><a class="nav-link" onclick="scrollToStats()">Impact</a></li>
+                        <li class="nav-item"><a class="nav-link" onclick="showPage('contact')">Contact</a></li>
+                        <li class="nav-item ms-2">
+                            <button class="btn btn-login" onclick="openModal('loginModal')">Login</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <section class="hero-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7">
+                        <h1 class="hero-title">Fighting Food Waste, Feeding Hope</h1>
+                        <p class="hero-subtitle">Connect surplus food with those who need it most. Join our community of donors, NGOs, and volunteers making a real difference in the fight against hunger.</p>
+                        <div class="mt-4">
+                            <button class="btn-hero-primary" onclick="openModal('registerModal')">
+                                <i class="fas fa-rocket"></i> Get Started
+                            </button>
+                            <button class="btn-hero-secondary" onclick="showPage('how')">
+                                <i class="fas fa-info-circle"></i> Learn More
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 text-center d-none d-lg-block">
+                        <i class="fas fa-hands-helping" style="font-size: 11rem; opacity: 0.2;"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-section" id="stats-section">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="section-title">Our Impact So Far</h2>
+                    <p class="section-subtitle">Together, we're creating real change in our communities</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stat-card">
+                            <i class="fas fa-box-open stat-icon"></i>
+                            <div class="stat-number">1,247</div>
+                            <div class="stat-label">Food Donations</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stat-card">
+                            <i class="fas fa-utensils stat-icon"></i>
+                            <div class="stat-number">12,450</div>
+                            <div class="stat-label">Meals Served</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stat-card">
+                            <i class="fas fa-heart stat-icon"></i>
+                            <div class="stat-number">87</div>
+                            <div class="stat-label">Partner NGOs</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stat-card">
+                            <i class="fas fa-users stat-icon"></i>
+                            <div class="stat-number">523</div>
+                            <div class="stat-label">Active Donors</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="section-title">How It Works</h2>
+                    <p class="section-subtitle">Three simple steps to make a big difference</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h4 class="step-title">Sign Up</h4>
+                            <p class="text-muted">Create your account as a donor, NGO, or delivery volunteer. Quick and easy registration process.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h4 class="step-title">Connect</h4>
+                            <p class="text-muted">Donors post available food. NGOs browse and accept donations in their area.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h4 class="step-title">Deliver</h4>
+                            <p class="text-muted">Our network ensures food reaches those in need, quickly and safely.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn-action" onclick="showPage('how')">
+                        View Detailed Guide
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="section-title">Why Choose FoodShare</h2>
+                    <p class="section-subtitle">Everything you need in one platform</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+                            <h5 class="fw-bold mb-3">Location Based</h5>
+                            <p class="text-muted mb-0">Smart matching connects donors with nearby NGOs for efficient delivery</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-bell"></i></div>
+                            <h5 class="fw-bold mb-3">Live Updates</h5>
+                            <p class="text-muted mb-0">Get instant notifications about your donations and pickup status</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                            <h5 class="fw-bold mb-3">Verified Partners</h5>
+                            <p class="text-muted mb-0">All NGOs are carefully verified by our administrative team</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+                            <h5 class="fw-bold mb-3">Track Impact</h5>
+                            <p class="text-muted mb-0">See the real-time impact of your contributions and donations</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-truck"></i></div>
+                            <h5 class="fw-bold mb-3">Easy Logistics</h5>
+                            <p class="text-muted mb-0">Streamlined pickup and delivery management system</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                            <h5 class="fw-bold mb-3">Mobile Friendly</h5>
+                            <p class="text-muted mb-0">Access from anywhere on any device, anytime</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2>Ready to Make a Difference?</h2>
+                <p class="lead mb-4">Join our community and start helping today</p>
+                <div class="mt-4">
+                    <button class="btn-hero-primary" onclick="showPage('donor')">
+                        <i class="fas fa-hand-holding-heart"></i> Become a Donor
+                    </button>
+                    <button class="btn-hero-secondary" onclick="showPage('ngo')">
+                        <i class="fas fa-building"></i> Register as NGO
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <h5 class="footer-title"><i class="fas fa-leaf"></i> FoodShare</h5>
+                        <p style="line-height: 1.7;">Connecting surplus food with those who need it most. Together, we can end food waste and hunger in our communities.</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <h5 class="footer-title">Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a onclick="showPage('about')"><i class="fas fa-angle-right"></i> About Us</a></li>
+                            <li class="mb-2"><a onclick="showPage('how')"><i class="fas fa-angle-right"></i> How It Works</a></li>
+                            <li class="mb-2"><a onclick="scrollToStats()"><i class="fas fa-angle-right"></i> Our Impact</a></li>
+                            <li class="mb-2"><a onclick="showPage('contact')"><i class="fas fa-angle-right"></i> Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <h5 class="footer-title">Get In Touch</h5>
+                        <p><i class="fas fa-envelope me-2"></i> info@foodshare.org</p>
+                        <p><i class="fas fa-phone me-2"></i> +91 123-456-7890</p>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> Chennai, Tamil Nadu</p>
+                    </div>
+                </div>
+                <hr style="border-color: rgba(255,255,255,0.2); margin: 30px 0;">
+                <div class="text-center">
+                    <p class="mb-0">&copy; 2024 FoodShare. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ABOUT PAGE -->
+    <div id="about-page" class="page-content">
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand" onclick="showPage('home')">
+                    <i class="fas fa-leaf"></i> FoodShare
+                </a>
+                <div class="ms-auto">
+                    <button class="btn btn-login" onclick="showPage('home')">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div style="padding-top: 100px; min-height: 100vh; padding-bottom: 50px;" class="container">
+            <h1 class="section-title text-center mb-5">About FoodShare</h1>
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    <div class="feature-card mb-4">
+                        <h3 style="color: var(--secondary-green);">Our Mission</h3>
+                        <p style="line-height: 1.8; color: #555;">FoodShare was founded with a simple yet powerful vision: to bridge the gap between food surplus and food scarcity. Every day, tons of perfectly good food goes to waste while millions go hungry. We're changing that narrative by connecting those with extra food to those who need it most.</p>
+                    </div>
+                    
+                    <div class="feature-card mb-4">
+                        <h3 style="color: var(--secondary-green);">What We Do</h3>
+                        <p style="line-height: 1.8; color: #555;">We've built a technology platform that connects food donors (restaurants, events, households) directly with verified NGOs and community organizations. Our network of delivery volunteers ensures that surplus food reaches those who need it most, quickly and efficiently.</p>
+                    </div>
+                    
+                    <div class="feature-card mb-4">
+                        <h3 style="color: var(--secondary-green);">Our Values</h3>
+                        <ul style="line-height: 2; color: #555;">
+                            <li><strong>Community First:</strong> Building connections that strengthen communities</li>
+                            <li><strong>Zero Waste:</strong> Every plate of food matters</li>
+                            <li><strong>Transparency:</strong> Open, honest operations you can trust</li>
+                            <li><strong>Dignity:</strong> Treating everyone with respect and compassion</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn-action" onclick="showPage('donor')">Join Our Mission</button>
+                        <button class="btn-action" onclick="showPage('contact')">Contact Us</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOW IT WORKS PAGE -->
+    <div id="how-page" class="page-content">
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand" onclick="showPage('home')">
+                    <i class="fas fa-leaf"></i> FoodShare
+                </a>
+                <div class="ms-auto">
+                    <button class="btn btn-login" onclick="showPage('home')">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div style="padding-top: 100px; min-height: 100vh; padding-bottom: 100px;" class="container">
+            <h1 class="section-title text-center mb-5">How FoodShare Works</h1>
+            
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    <div class="feature-card mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="step-number" style="margin-right: 20px; flex-shrink: 0;">1</div>
+                            <div>
+                                <h4 style="color: var(--secondary-green); font-weight: 600;">For Donors</h4>
+                                <p style="color: #666; line-height: 1.7;">Sign up and create a donation listing with details about the food (type, quantity, pickup location, availability time). Upload photos if possible. Nearby NGOs get notified automatically.</p>
+                                <button class="btn-action btn-sm" onclick="openModal('registerModal')">Register as Donor</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="step-number" style="margin-right: 20px; flex-shrink: 0;">2</div>
+                            <div>
+                                <h4 style="color: var(--secondary-green); font-weight: 600;">For NGOs</h4>
+                                <p style="color: #666; line-height: 1.7;">Register and get verified by our admin team. Browse available donations in your area. Accept donations that match your needs. Request pickup or arrange your own collection.</p>
+                                <button class="btn-action btn-sm" onclick="openModal('registerModal')">Register as NGO</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="step-number" style="margin-right: 20px; flex-shrink: 0;">3</div>
+                            <div>
+                                <h4 style="color: var(--secondary-green); font-weight: 600;">For Delivery Volunteers</h4>
+                                <p style="color: #666; line-height: 1.7;">Sign up as a delivery volunteer. Get assigned pickup and delivery tasks. Use our app to navigate routes efficiently. Update status in real-time.</p>
+                                <button class="btn-action btn-sm" onclick="openModal('registerModal')">Register as Volunteer</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4 style="color: var(--secondary-green); font-weight: 600; margin-bottom: 20px;">The Complete Journey</h4>
+                        <ol style="line-height: 2; color: #666;">
+                            <li>Donor posts available food with all details</li>
+                            <li>System notifies nearby verified NGOs</li>
+                            <li>NGO reviews and accepts the donation</li>
+                            <li>Admin assigns delivery personnel (if needed)</li>
+                            <li>Delivery person picks up food from donor</li>
+                            <li>Food is delivered to NGO safely</li>
+                            <li>Both parties confirm delivery completion</li>
+                            <li>Impact is tracked and reported</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACT PAGE -->
+    <div id="contact-page" class="page-content">
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand" onclick="showPage('home')">
+                    <i class="fas fa-leaf"></i> FoodShare
+                </a>
+                <div class="ms-auto">
+                    <button class="btn btn-login" onclick="showPage('home')">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div style="padding-top: 100px; min-height: 100vh; padding-bottom: 50px;" class="container">
+            <h1 class="section-title text-center mb-5">Contact Us</h1>
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="feature-card">
+                        <form onsubmit="handleContact(event)">
+                            <div class="mb-3">
+                                <label class="form-label">Your Name</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Subject</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-control" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn-action w-100">Send Message</button>
+                        </form>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="feature-card">
+                                <i class="fas fa-envelope" style="font-size: 2rem; color: var(--primary-yellow); margin-bottom: 10px;"></i>
+                                <h6 class="fw-bold">Email</h6>
+                                <p class="mb-0 text-muted">info@foodshare.org</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="feature-card">
+                                <i class="fas fa-phone" style="font-size: 2rem; color: var(--primary-yellow); margin-bottom: 10px;"></i>
+                                <h6 class="fw-bold">Phone</h6>
+                                <p class="mb-0 text-muted">+91 123-456-7890</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="feature-card">
+                                <i class="fas fa-map-marker-alt" style="font-size: 2rem; color: var(--primary-yellow); margin-bottom: 10px;"></i>
+                                <h6 class="fw-bold">Address</h6>
+                                <p class="mb-0 text-muted">Chennai, Tamil Nadu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DONOR DASHBOARD -->
+    <div id="donor-page" class="page-content">
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand" onclick="showPage('home')">
+                    <i class="fas fa-leaf"></i> FoodShare
+                </a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" onclick="showPage('donor')">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" onclick="openModal('donationModal')">New Donation</a></li>
+                        <li class="nav-item"><a class="nav-link">John Doe</a></li>
+                        <li class="nav-item"><button class="btn btn-login" onclick="showPage('home')">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-header">
+            <div class="container">
+                <h2><i class="fas fa-tachometer-alt"></i> Donor Dashboard</h2>
+                <p class="mb-0">Welcome back, John Doe!</p>
+            </div>
+        </div>
+
+        <div class="container mb-5">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 5px;">15</h3>
+                        <p class="mb-0 text-muted">Total Donations</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 5px;">12</h3>
+                        <p class="mb-0 text-muted">Completed</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 5px;">3</h3>
+                        <p class="mb-0 text-muted">Pending</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center my-4">
+                <button class="btn-action" onclick="openModal('donationModal')">
+                    <i class="fas fa-plus-circle"></i> Create New Donation
+                </button>
+            </div>
+
+            <h4 class="mb-3" style="color: var(--dark-green);">Recent Donations</h4>
+            
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="mb-2"><i class="fas fa-pizza-slice" style="color: var(--primary-yellow);"></i> Fresh Pizza - 10 boxes</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-calendar"></i> Created: Today, 2:30 PM</p>
+                        <p class="text-muted mb-0"><i class="fas fa-hands-helping"></i> Accepted by: <strong>Helping Hands NGO</strong></p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <span class="badge-status badge-completed">COMPLETED</span>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-secondary">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="mb-2"><i class="fas fa-bread-slice" style="color: var(--primary-yellow);"></i> Fresh Bread - 50 pieces</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-calendar"></i> Created: Yesterday, 5:00 PM</p>
+                        <p class="text-muted mb-0"><i class="fas fa-clock"></i> Waiting for NGO acceptance</p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <span class="badge-status badge-pending">PENDING</span>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-secondary">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="mb-2"><i class="fas fa-bowl-rice" style="color: var(--primary-yellow);"></i> Cooked Rice - 20 kg</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-calendar"></i> Created: 2 days ago</p>
+                        <p class="text-muted mb-0"><i class="fas fa-hands-helping"></i> Accepted by: <strong>Food For All NGO</strong></p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <span class="badge-status badge-active">IN TRANSIT</span>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-secondary">Track</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NGO DASHBOARD -->
+    <div id="ngo-page" class="page-content">
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand" onclick="showPage('home')">
+                    <i class="fas fa-leaf"></i> FoodShare
+                </a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" onclick="showPage('ngo')">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link">Helping Hands NGO</a></li>
+                        <li class="nav-item"><button class="btn btn-login" onclick="showPage('home')">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-header">
+            <div class="container">
+                <h2><i class="fas fa-building"></i> NGO Dashboard</h2>
+                <p class="mb-0">Helping Hands Organization</p>
+            </div>
+        </div>
+
+        <div class="container mb-5">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--primary-yellow); margin-bottom: 5px;">23</h3>
+                        <p class="mb-0 text-muted">Available Donations</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 5px;">45</h3>
+                        <p class="mb-0 text-muted">Total Received</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--primary-yellow); margin-bottom: 5px;">5</h3>
+                        <p class="mb-0 text-muted">In Progress</p>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mt-4 mb-3" style="color: var(--dark-green);">Available Donations Nearby</h4>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="mb-2"><i class="fas fa-bread-slice" style="color: var(--primary-yellow);"></i> Fresh Bread - 50 pieces</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> 2.5 km away</p>
+                        <p class="text-muted mb-0"><i class="fas fa-clock"></i> Available until: 8:00 PM today</p>
+                    </div>
+                    <div class="col-md-5 text-end">
+                        <button class="btn-action" onclick="acceptDonation(1)">
+                            <i class="fas fa-check"></i> Accept Donation
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="mb-2"><i class="fas fa-apple-alt" style="color: var(--primary-yellow);"></i> Fresh Fruits - 15 kg</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> 4.2 km away</p>
+                        <p class="text-muted mb-0"><i class="fas fa-clock"></i> Available until: 6:00 PM today</p>
+                    </div>
+                    <div class="col-md-5 text-end">
+                        <button class="btn-action" onclick="acceptDonation(2)">
+                            <i class="fas fa-check"></i> Accept Donation
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="mb-2"><i class="fas fa-drumstick-bite" style="color: var(--primary-yellow);"></i> Cooked Meals - 30 plates</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-map-marker-alt"></i> 1.8 km away</p>
+                        <p class="text-muted mb-0"><i class="fas fa-clock"></i> Available until: 7:30 PM today</p>
+                    </div>
+                    <div class="col-md-5 text-end">
+                        <button class="btn-action" onclick="acceptDonation(3)">
+                            <i class="fas fa-check"></i> Accept Donation
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mt-5 mb-3" style="color: var(--dark-green);">Accepted Donations</h4>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="mb-2"><i class="fas fa-pizza-slice" style="color: var(--primary-yellow);"></i> Fresh Pizza - 10 boxes</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-user"></i> Donor: Restaurant ABC</p>
+                        <p class="text-muted mb-0"><i class="fas fa-truck"></i> Delivery in progress</p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <span class="badge-status badge-active">IN TRANSIT</span>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-secondary">Track</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="admin-page" class="page-content">
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand" onclick="showPage('home')">
+                    <i class="fas fa-leaf"></i> FoodShare
+                </a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" onclick="showPage('admin')">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link">Admin</a></li>
+                        <li class="nav-item"><button class="btn btn-login" onclick="showPage('home')">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-header">
+            <div class="container">
+                <h2><i class="fas fa-cog"></i> Admin Dashboard</h2>
+                <p class="mb-0">System Administrator Panel</p>
+            </div>
+        </div>
+
+        <div class="container mb-5">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 5px;">523</h3>
+                        <p class="mb-0 text-muted">Total Users</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 5px;">1,247</h3>
+                        <p class="mb-0 text-muted">Total Donations</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--primary-yellow); margin-bottom: 5px;">5</h3>
+                        <p class="mb-0 text-muted">Pending Verifications</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard-stat">
+                        <h3 style="color: var(--secondary-green); margin-bottom: 5px;">87</h3>
+                        <p class="mb-0 text-muted">Active NGOs</p>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mt-4 mb-3" style="color: var(--dark-green);">Pending NGO Verifications</h4>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="mb-2">Community Care NGO</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-id-card"></i> Reg No: NGO/2024/12345</p>
+                        <p class="text-muted mb-0"><i class="fas fa-envelope"></i> contact@communitycare.org</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn-action me-2" onclick="verifyNGO(1)">
+                            <i class="fas fa-check"></i> Verify
+                        </button>
+                        <button class="btn btn-secondary" onclick="rejectNGO(1)">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="mb-2">Hope Foundation</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-id-card"></i> Reg No: NGO/2024/12346</p>
+                        <p class="text-muted mb-0"><i class="fas fa-envelope"></i> info@hopefoundation.org</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn-action me-2" onclick="verifyNGO(2)">
+                            <i class="fas fa-check"></i> Verify
+                        </button>
+                        <button class="btn btn-secondary" onclick="rejectNGO(2)">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mt-5 mb-3" style="color: var(--dark-green);">Recent Donations</h4>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="mb-2"><i class="fas fa-pizza-slice" style="color: var(--primary-yellow);"></i> Fresh Pizza - 10 boxes</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-user"></i> Donor: John Doe | NGO: Helping Hands</p>
+                        <p class="text-muted mb-0"><i class="fas fa-calendar"></i> Today, 2:30 PM</p>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <span class="badge-status badge-completed">COMPLETED</span>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-secondary">Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="donation-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="mb-2"><i class="fas fa-bread-slice" style="color: var(--primary-yellow);"></i> Fresh Bread - 50 pieces</h5>
+                        <p class="text-muted mb-1"><i class="fas fa-user"></i> Donor: Bakery XYZ</p>
+                        <p class="text-muted mb-0"><i class="fas fa-calendar"></i> Today, 5:00 PM</p>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <span class="badge-status badge-pending">PENDING</span>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-secondary">Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-4 text-center mb-3">
+                    <div class="feature-card">
+                        <i class="fas fa-users" style="font-size: 2.5rem; color: var(--primary-yellow); margin-bottom: 15px;"></i>
+                        <h5 class="fw-bold">Manage Users</h5>
+                        <p class="text-muted mb-3">View, verify, and manage all system users</p>
+                        <button class="btn-action btn-sm">View All Users</button>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line" style="font-size: 2.5rem; color: var(--primary-yellow); margin-bottom: 15px;"></i>
+                        <h5 class="fw-bold">View Reports</h5>
+                        <p class="text-muted mb-3">Access detailed analytics and reports</p>
+                        <button class="btn-action btn-sm">Generate Report</button>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <div class="feature-card">
+                        <i class="fas fa-cog" style="font-size: 2.5rem; color: var(--primary-yellow); margin-bottom: 15px;"></i>
+                        <h5 class="fw-bold">System Settings</h5>
+                        <p class="text-muted mb-3">Configure system preferences</p>
+                        <button class="btn-action btn-sm">Open Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
