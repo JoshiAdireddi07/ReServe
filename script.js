@@ -302,23 +302,19 @@ function validatePhone(phone) {
     return re.test(phone.replace(/\D/g, ''));
 }
 
-// Local Storage for demo purposes (save user preferences)
-function saveToLocalStorage(key, value) {
-    try {
-        localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-        console.log('LocalStorage not available');
-    }
+// Memory storage for demo purposes (NO localStorage/sessionStorage)
+const appState = {
+    isLoggedIn: false,
+    userRole: null,
+    userData: null
+};
+
+function saveToMemory(key, value) {
+    appState[key] = value;
 }
 
-function getFromLocalStorage(key) {
-    try {
-        const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : null;
-    } catch (e) {
-        console.log('LocalStorage not available');
-        return null;
-    }
+function getFromMemory(key) {
+    return appState[key] || null;
 }
 
 // Initialize the website
@@ -340,16 +336,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Check if user is logged in (demo)
-    const isLoggedIn = getFromLocalStorage('isLoggedIn');
+    const isLoggedIn = getFromMemory('isLoggedIn');
     if (isLoggedIn) {
-        const userRole = getFromLocalStorage('userRole');
+        const userRole = getFromMemory('userRole');
         if (userRole) {
             // Auto-login user
             showPage(userRole);
         }
     }
     
-    console.log('%cFoodShare Website Loaded Successfully!', 'color: #4a6741; font-size: 16px; font-weight: bold;');
+    console.log('%cReServe Website Loaded Successfully!', 'color: #4a6741; font-size: 16px; font-weight: bold;');
     console.log('%cThis is a demo website. All data is simulated.', 'color: #d4af37; font-size: 12px;');
 });
 
